@@ -51,7 +51,7 @@ const Home = () => {
 
         {/* Buttons Section */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <button
+          {/* <button
             onClick={() => navigate("/register")}
             style={{
               padding: "15px",
@@ -69,9 +69,9 @@ const Home = () => {
             onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
           >
             Register
-          </button>
+          </button> */}
 
-          {/* <button
+  <button
             onClick={() => navigate("/volunteer-register")}
             style={{
               padding: "15px",
@@ -88,7 +88,7 @@ const Home = () => {
             onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
           >
             Volunteer Registration
-          </button> */}
+          </button> 
         </div>
       </div>
     </div>

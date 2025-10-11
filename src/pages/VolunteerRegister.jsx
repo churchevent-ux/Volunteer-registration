@@ -33,7 +33,9 @@ const VolunteerRegister = () => {
     availableDates: [],
     volunteerAgreement: false,
     signature: "",
+    priorExperience: "", // <-- new field
   });
+  
 
   /** ---------------------------
    * 2. Responsive
@@ -100,8 +102,9 @@ const VolunteerRegister = () => {
         if (!isNaN(idNum)) lastIndex = idNum;
       });
 
-      const newId = `Volunteer ${lastIndex + 1}`;
+      const newId = `Volunteer-${Date.now()}`;
       const dataToSave = { ...formData, volunteerId: newId, createdAt: new Date() };
+      await addDoc(volRef, dataToSave);
 
       await addDoc(volRef, dataToSave);
       navigate("/volunteer-id", { state: { formData: dataToSave } });
@@ -145,7 +148,7 @@ const VolunteerRegister = () => {
       }}
     >
       {/* Floating Login Button */}
-      <div
+      {/* <div
         style={{
           position: "fixed",
           top: 20,
@@ -169,7 +172,7 @@ const VolunteerRegister = () => {
         >
          Register
         </button>
-      </div>
+      </div> */}
 
       {/* Header */}
       <Header isMobile={isMobile} />
@@ -215,13 +218,15 @@ const VolunteerRegister = () => {
               onChange={handleChange}
               required
             />
-            <Input
-              label="Phone Number"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
+          <Input
+  label="Phone Number"
+  name="phone"
+  value={formData.phone}
+  onChange={handleChange}
+  required
+  pattern="^(?:\+971|0)?5\d{8}$"
+  title="Enter a valid UAE phone number (e.g., 0501234567)"
+/>
 
             {/* Preferred Role */}
             <div style={{ marginBottom: 15 }}>
@@ -245,6 +250,24 @@ const VolunteerRegister = () => {
                 ))}
               </select>
             </div>
+
+
+
+            <div style={{ marginBottom: 15 }}>
+  <label style={inputLabel}>Have you volunteered before?</label>
+  <select
+    name="priorExperience"
+    value={formData.priorExperience}
+    onChange={handleChange}
+    required
+    style={selectStyle}
+  >
+    <option value="">-- Select an option --</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
+</div>
+
 
             {/* Preferred Location */}
             <div style={{ marginBottom: 15 }}>

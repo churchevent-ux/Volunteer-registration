@@ -9,12 +9,14 @@ import {
   limit,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import Logo from "../images/bcst.jpeg";
+import Logo from "../images/church logo2.png";
 import Logo2 from "../images/church logo2.png";
 import Logo3 from "../images/logo2.png";
 
 const VolunteerRegister = () => {
   const navigate = useNavigate();
+  const [ageError, setAgeError] = useState("");
+
 
   /** ---------------------------
    * 1. Form State
@@ -36,6 +38,7 @@ const VolunteerRegister = () => {
     priorExperience: "", // <-- new field
   });
   
+
 
   /** ---------------------------
    * 2. Responsive
@@ -59,13 +62,22 @@ const VolunteerRegister = () => {
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
         ageNow--;
       }
-      if (ageNow.toString() !== formData.age) {
-        setFormData((prev) => ({ ...prev, age: ageNow.toString() }));
+  
+      setFormData((prev) => ({ ...prev, age: ageNow.toString() }));
+  
+      // Minimum age check
+      if (ageNow < 12) {
+        setAgeError("Sorry, volunteers must be at least 12 years old to participate.");
+      } else {
+        setAgeError(""); // clear error if age is valid
       }
     } else {
       setFormData((prev) => ({ ...prev, age: "" }));
+      setAgeError("");
     }
   }, [formData.dob]);
+  
+  
 
   /** ---------------------------
    * 4. Handlers
@@ -89,30 +101,30 @@ const VolunteerRegister = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    // Minimum age check
+    if (parseInt(formData.age) < 12) {
+      return; // stops submission if age is below 12
+    }
+  
     try {
       const volRef = collection(db, "volunteers");
-      const q = query(volRef, orderBy("createdAt", "desc"), limit(1));
-      const snap = await getDocs(q);
-
-      let lastIndex = 0;
-      snap.forEach((doc) => {
-        const idNum = parseInt(
-          doc.data()?.volunteerId?.replace("Volunteer ", "") || "0"
-        );
-        if (!isNaN(idNum)) lastIndex = idNum;
-      });
-
+  
+      // Generate a unique volunteer ID
       const newId = `Volunteer-${Date.now()}`;
       const dataToSave = { ...formData, volunteerId: newId, createdAt: new Date() };
+  
+      // Save to Firestore
       await addDoc(volRef, dataToSave);
-
-      await addDoc(volRef, dataToSave);
+  
+      // Navigate to volunteer ID page with data
       navigate("/volunteer-id", { state: { formData: dataToSave } });
     } catch (err) {
       console.error("Error adding volunteer:", err);
       alert("Failed to register. Check console for details.");
     }
   };
+  
 
   /** ---------------------------
    * 5. Constants
@@ -209,6 +221,11 @@ const VolunteerRegister = () => {
                 required
                 readOnly
               />
+              {ageError && (
+  <div style={{ color: "red", fontSize: "13px", marginTop: "-10px",paddingBottom:"5px" }}>
+    {ageError}
+  </div>
+)}
             </div>
             <Input
               label="Email"
@@ -254,7 +271,7 @@ const VolunteerRegister = () => {
 
 
             <div style={{ marginBottom: 15 }}>
-  <label style={inputLabel}>Have you volunteered before?</label>
+  <label style={inputLabel}> Have you volunteered or participated in similar events before?</label>
   <select
     name="priorExperience"
     value={formData.priorExperience}
@@ -459,97 +476,164 @@ const selectStyle = {
   boxSizing: "border-box",
 };
 
-const Header = ({ isMobile }) => (
-  <div
+
+const Header = () => (
+  <div style={headerStyles.container}>
+    <div style={headerStyles.wrapper}>
+      {/* Left Logos */}
+      <div style={headerStyles.left}>
+        <img src={Logo} alt="Logo2" style={headerStyles.logo} />
+        {/* <img src={Logo3} alt="Logo3" style={headerStyles.logo} /> */}
+      </div>
+
+      {/* Center Text */}
+      <div
+  style={{
+    textAlign: "center",
+    borderRadius: "18px",
+    padding: "10px 20px",
+    margin: "0 auto 10px",
+    maxWidth: "650px",
+  }}
+>
+  {/* Logo (Optional — add your logo image if available) */}
+  {/* <img
+    src={Logo}
+    alt="Logo"
     style={{
-      width: "100%",
-      background: "rgba(255,255,255,0.95)",
-      borderTop: "6px solid #6c3483",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-      marginBottom: 35,
+      maxWidth: "100px",
+      marginBottom: "15px",
+    }}
+  /> */}
+
+  <h1
+    style={{
+      fontSize: "30px",
+      color: "#5a2d82",
+      textTransform: "uppercase",
+      letterSpacing: "1px",
+      fontWeight: "900",
+      margin: "0 0 10px",
     }}
   >
-    <div
-      style={{
-        maxWidth: "1000px",
-        margin: "0 auto",
-        display: "flex",
-        flexWrap: "wrap",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "20px",
-        borderRadius: 12,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 10,
-          flex: "1 1 150px",
-          order: 1,
-        }}
-      >
-        <img src={Logo2} alt="Logo2" style={{ maxWidth: 150, height: "auto" }} />
-        {/* <img src={Logo3} alt="Logo3" style={{ maxWidth: 120, height: "auto" }} /> */}
-      </div>
-      <div
-        style={{
-          flex: "2 1 300px",
-          textAlign: "center",
-          order: 2,
-          marginBottom: isMobile ? 15 : 0,
-        }}
-      >
-        <h2
-          style={{
-            margin: 0,
-            fontSize: "20px",
-            color: "#2c3e50",
-            textTransform: "uppercase",
-            letterSpacing: "1px",
-          }}
-        >
-          Charis Malayalam Dubai
-        </h2>
-        <h3 style={{ margin: "5px 0", fontSize: "16px", color: "#555" }}>
-          St. Mary’s Church, Dubai
-        </h3>
-        <p style={{ margin: "5px 0", fontSize: "13px", color: "#666" }}>
-          P.O. BOX: 51200, Dubai, U.A.E
-        </p>
-        <h1
-          style={{
-            marginTop: 15,
-            fontSize: "22px",
-            color: "#8b0000",
-            fontWeight: "bold",
-          }}
-        >
-          Christ Experience
-        </h1>
-        <h2
-          style={{ margin: "8px 0", fontSize: "18px", color: "#6c3483" }}
-        >
-          Volunteer Registration 2025
-        </h2>
-        <p style={{ fontSize: "13px", fontStyle: "italic" }}>
-          By Marian Ministry
-        </p>
-      </div>
-      <div
-        style={{
-          flex: "1 1 150px",
-          textAlign: "center",
-          order: isMobile ? 0 : 3,
-        }}
-      >
-        {/* <img src={Logo} alt="Logo" style={{ maxWidth: 130, height: "auto" }} /> */}
+    DEO GRATIAS – 2025
+  </h1>
+
+  <div
+    style={{
+      width: "70px",
+      height: "4px",
+      backgroundColor: "#5a2d82",
+      borderRadius: "4px",
+      margin: "12px auto 18px",
+    }}
+  ></div>
+
+  <h2
+    style={{
+      fontSize: "20px",
+      color: "#333",
+      fontStyle: "italic",
+      margin: "0 0 5px",
+      fontWeight: "500",
+    }}
+  >
+    Teens & Kids Retreat
+  </h2>
+
+  <p
+    style={{
+      fontSize: "15px",
+      color: "#555",
+      margin: "0 0 10px",
+      letterSpacing: "0.3px",
+    }}
+  >
+    (December 28th to 30th) – 3 Days
+  </p>
+
+  <h3
+    style={{
+      fontSize: "17px",
+      color: "#2c3e50",
+      fontWeight: "700",
+      margin: "15px 0 5px",
+    }}
+  >
+    St. Mary’s Church, Dubai
+  </h3>
+
+  <p
+    style={{
+      fontSize: "14px",
+      color: "#777",
+      margin: "0",
+    }}
+  >
+    P.O. BOX: 51200, Dubai, U.A.E
+  </p>
+</div>
+
+
+      {/* Right Logo */}
+      <div style={headerStyles.right}>
+        {/* <img src={Logo} alt="Logo" style={headerStyles.logo} /> */}
       </div>
     </div>
   </div>
 );
+
+const headerStyles = {
+  container: {
+    width: "100%",
+    background: "rgba(255,255,255,0.95)",
+    borderTop: "6px solid #6c3483",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+    marginBottom: 20,
+  },
+  wrapper: {
+    maxWidth: 1000,
+    margin: "0 auto",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    padding: 10,
+    boxSizing: "border-box",
+    gap: 15,
+  },
+  left: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    alignItems: "center",
+  },
+  right: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  center: {
+    flex: 1,
+    textAlign: "center",
+  },
+  logo: {
+    maxWidth: 180,
+    height: "auto",
+  },
+  title: { margin: 0, fontSize: 18, color: "#2c3e50", textTransform: "uppercase" },
+  subtitle: { margin: "5px 0", fontSize: 14, color: "#555" },
+  text: { margin: "5px 0", fontSize: 12, color: "#666" },
+  mainTitle: { marginTop: 5, fontSize: 18, color: "#8b0000", fontWeight: "bold" },
+  subTitle: { margin: "5px 0", fontSize: 16, color: "#6c3483" },
+  textItalic: { fontSize: 12, fontStyle: "italic", margin: "0 0 5px 0" },
+};
+
+
+
+
+
+
 
 const Card = ({ title, children }) => (
   <div

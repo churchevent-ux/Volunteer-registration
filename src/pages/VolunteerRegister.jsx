@@ -400,7 +400,7 @@ const VolunteerRegister = () => {
                 onChange={handleChange}
                 required
               />{" "}
-              I agree to abide by the guidelines of the Christeen Retreat and
+              I agree to abide by the guidelines of the Teens & Kids Retreat and
               fulfill my duties responsibly.
             </label>
             <Input

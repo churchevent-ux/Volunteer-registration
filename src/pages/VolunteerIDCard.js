@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import { toPng } from "html-to-image";
 import Logo from "../images/bcst.jpeg";
-import Logo2 from "../images/logo.jpg";
+import Logo2 from "../images/church logo2.png";
 import Logo3 from "../images/logo2.png";
 
 const VolunteerIDCard = () => {
@@ -36,8 +36,15 @@ const VolunteerIDCard = () => {
     }
   };
 
+  // Helper: capitalize first letter of each word
+const capitalizeName = (name) =>
+  name
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+
   return (
-    <div style={{ fontFamily: "'Georgia', serif", padding: 20, display: "flex", justifyContent: "center" }}>
+    <div style={{ fontFamily: "'monsterat', serif", padding: 20, display: "flex", justifyContent: "center" }}>
       <div
         ref={cardRef}
         style={{
@@ -53,25 +60,24 @@ const VolunteerIDCard = () => {
       >
         {/* Header Logos */}
         <div style={{ display: "flex", justifyContent: "space-around", marginBottom: 15 }}>
-          <img src={Logo2} alt="Logo2" style={{ maxHeight: 50 }} />
-          <img src={Logo3} alt="Logo3" style={{ maxHeight: 50 }} />
-          <img src={Logo} alt="Logo" style={{ maxHeight: 50 }} />
+          <img src={Logo2} alt="Logo2" style={{ maxHeight: 120 }} />
+  
         </div>
 
-        <h2 style={{ margin: "10px 0", color: "#6c3483", fontSize: 22 }}>Volunteer ID 2025</h2>
-        <p style={{ margin: "4px 0", fontWeight: "bold", fontSize: 16 }}>{formData.fullName}</p>
-
+        <h2 style={{ margin: "10px 0", color: "#6c3483", fontSize: 22 }}>VOLUNTEER ID CARD</h2>
+<p style={{ margin: "4px 0", fontWeight: "bold", fontSize: 16 }}>
+  {capitalizeName(formData.fullName)}
+</p>
         <div style={{ margin: "6px 0", fontSize: 14, color: "#333" }}>
           <p>Role: {formData.preferredRole || "Volunteer"}</p>
           <p>Location: {formData.preferredLocation || "—"}</p>
-          <p>T-Shirt: {formData.tshirtSize || "—"}</p>
         </div>
 
-        <h3 style={{ margin: "10px 0", color: "#8b0000" }}>ID: {volunteerId}</h3>
+        <h3 style={{ margin: "10px 0", color: "#8b0000" }}> {volunteerId}</h3>
 
         {/* QR Code with the Volunteer ID */}
         <div style={{ marginTop: 15 }}>
-          <QRCodeCanvas value={volunteerId} size={150} />
+          <QRCodeCanvas value={volunteerId} size={150}  />
         </div>
 
         <button
